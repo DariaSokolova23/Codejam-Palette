@@ -5,12 +5,36 @@ context.strokeStyle = '#000000';
 context.lineJoin = 'round';
 context.lineCup = 'round';
 
+let isPenCheck = true;
+let isFillCheck = false;
+let isPickCheck = false;
 let isDrawing = false;
 let lastX = 0;
 let lastY = 0;
 
+let elemPen = document.getElementById('pen');
+elemPen.addEventListener('change', function(e){
+    isPenCheck = true;
+    isFillCheck = false;
+    isPickCheck = false;
+})
+let elemFill = document.getElementById('fill');
+elemFill.addEventListener('change', function(e){
+    isPenCheck = false;
+    isFillCheck = true;
+    isPickCheck = false;
+
+})
+let elemPick = document.getElementById('pick');
+elemPick.addEventListener('change', function(e){
+    isPenCheck = false;
+    isFillCheck = false;
+    isPickCheck = true;
+})
+
 function draw(event){
     if (!isDrawing) return;
+    if(!isPenCheck)return;
     console.log(event);
     context.beginPath();
     context.moveTo(lastX, lastY);
@@ -26,6 +50,37 @@ canvas.addEventListener('mousedown', (event) => {
 });
 canvas.addEventListener('mouseup',() => isDrawing = false);
 canvas.addEventListener('mouseout',() => isDrawing = false);
+canvas.addEventListener('click',function(event){
+    if (isPenCheck) return;
+    let c = getColorIndicesForCoord(event.offsetX, event.offsetY, 512);
+    let objectImageData = context.getImageData(0,0,512,512);    
+    let imageData = objectImageData.data;
+    let red = imageData[c[0]];
+    let green = imageData[c[1]];
+    let blue = imageData[c[2]];
+    if (isPickCheck){
+        context.strokeStyle ='rgb('+red+', '+green+', '+blue+')';
+        return
+    }
+    for (let x = 0; x < 512; x++){
+        for(let y = 0; y < 512; y++){
+            
+            let nowColor = getColorIndicesForCoord(x ,y, 512);
+            let r1 = imageData[nowColor[0]];
+            let g1 = imageData[nowColor[1]];
+            let b1 = imageData[nowColor[2]];
+            if ((r1==red)&&(g1==green)&&(b1==blue)){debugger
+                imageData[nowColor[0]]=0;
+                imageData[nowColor[1]]=0;
+                imageData[nowColor[2]]=0;
+                imageData[nowColor[3]]=255;
+            }
+        }
+    }
+    context.putImageData(objectImageData, 0, 0);
+    console.log(context.strokeStyle);
+    
+})
 
 //Color picker
 let colors = {
@@ -51,13 +106,11 @@ for (let i in colors){
 colorSelect.addEventListener('change',function(event){
     context.strokeStyle = colorSelect.value;
 })
-//функция возвращает цвета и прозрачность
+//функция возвращает цвета и прозрачность //каждый пиксель 8 байт
 const getColorIndicesForCoord = (x, y, width) => {
     const red = y*(width*4) + x*4;
     return [red, red + 1, red + 2, red + 3];
 };
-//const colorIndices = getColorIndicesForCoord(xCoord, yCoord, canvasWidth);
-//const [redIndex, greenIndex, blueIndex, alphaIndex] = colorIndices;
 
-//context.fillStyle = color;//заливка
+
 
