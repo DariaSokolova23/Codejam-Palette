@@ -34,8 +34,7 @@ elemPick.addEventListener('change', function(e){
 
 function draw(event){
     if (!isDrawing) return;
-    if(!isPenCheck)return;
-    console.log(event);
+    if(!isPenCheck)return;    
     context.beginPath();
     context.moveTo(lastX, lastY);
     context.lineTo(event.offsetX, event.offsetY);
@@ -70,8 +69,7 @@ canvas.addEventListener('click',function(event){
             let r1 = imageData[nowColor[0]];
             let g1 = imageData[nowColor[1]];
             let b1 = imageData[nowColor[2]];
-            if ((r1==red)&&(g1==green)&&(b1==blue)){
-                //debugger
+            if ((r1==red)&&(g1==green)&&(b1==blue)){                
                 let currentColor = context.strokeStyle;
                 let r = parseInt(currentColor.substring(1, 3), 16);//не обрабатываем #
                 let g = parseInt(currentColor.substring(3, 5), 16);
@@ -85,7 +83,7 @@ canvas.addEventListener('click',function(event){
         }
     }
     context.putImageData(objectImageData, 0, 0);
-    console.log(context.strokeStyle);
+    
     
 })
 
