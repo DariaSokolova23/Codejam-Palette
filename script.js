@@ -57,11 +57,12 @@ canvas.addEventListener('click',function(event){
     let imageData = objectImageData.data;
     let red = imageData[c[0]];
     let green = imageData[c[1]];
-    let blue = imageData[c[2]];
+    let blue = imageData[c[2]];    
     if (isPickCheck){
         context.strokeStyle ='rgb('+red+', '+green+', '+blue+')';
         return
     }
+    //заливка если не пипетка
     for (let x = 0; x < 512; x++){
         for(let y = 0; y < 512; y++){
             
@@ -69,10 +70,16 @@ canvas.addEventListener('click',function(event){
             let r1 = imageData[nowColor[0]];
             let g1 = imageData[nowColor[1]];
             let b1 = imageData[nowColor[2]];
-            if ((r1==red)&&(g1==green)&&(b1==blue)){debugger
-                imageData[nowColor[0]]=0;
-                imageData[nowColor[1]]=0;
-                imageData[nowColor[2]]=0;
+            if ((r1==red)&&(g1==green)&&(b1==blue)){
+                //debugger
+                let currentColor = context.strokeStyle;
+                let r = parseInt(currentColor.substring(1, 3), 16);//не обрабатываем #
+                let g = parseInt(currentColor.substring(3, 5), 16);
+                let b = parseInt(currentColor.substring(5, 7), 16);
+                let a = 255;
+                imageData[nowColor[0]]=r;
+                imageData[nowColor[1]]=g;
+                imageData[nowColor[2]]=b;
                 imageData[nowColor[3]]=255;
             }
         }
